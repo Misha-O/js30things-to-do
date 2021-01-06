@@ -1,19 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>HTML5 Canvas</title>
-</head>
-<body>
-<canvas id="draw" width="800" height="800"></canvas>
-<script>
-</script>
+  <head>
+    <meta charset="UTF-8" />
+    <title>HTML5 Canvas</title>
+  </head>
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+  </style>
+  <body>
+    <canvas id="draw" width="1000" height="1000"></canvas>
 
-<style>
-  html, body {
-    margin: 0;
-  }
-</style>
+    <script>
+      const canvas = document.querySelector("#draw");
 
-</body>
+      // get canvas 2D context and set him correct size
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      ctx.strokeStyle = "#BADA55";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.lineWidth = 30;
+
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      let hue = 0;
+      let flipWidth = true;
+
+      function draw(e) {
+        if (!isDrawing) return; //stop when not mouse down
+
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+        ctx.beginPath();
+        //starts path
+        ctx.moveTo(lastX, lastY);
+        // goes to
+        ctx.lineTo(e.offsetX, e.offsetY); //draws to mouse position
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+
+        hue++;
+        if (hue > 365) {
+          hue = 0;
+        }
+
+        if (ctx.lineWidth >= 100 || ctx.lineWidth <= 2) {
+          flipWidth = !flipWidth;
+        }
+
+        flipWidth ? ctx.lineWidth++ : ctx.lineWidth--;
+      }
+
+      canvas.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      });
+
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseup", () => (isDrawing = false));
+      canvas.addEventListener("mouseout", () => (isDrawing = false));
+    </script>
+  </body>
 </html>
